@@ -1,0 +1,15 @@
+{
+  "name": "list",
+  "version": "1.0.0",
+  "description": "Application made to keep track of a list by several people.",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./server/startup/server.js"
+  },
+  "author": "Filip Garamvölgyi",
+  "license": "MIT"
+}
