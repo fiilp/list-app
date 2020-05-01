@@ -1,0 +1,39 @@
+.List input[type=text]{
+  width: 75%;
+}
+.List input[type=submit]{
+  margin-left: 1em;
+  background-color: #4CAF50;
+  color: #F1FAEE;
+  font-weight: bold;
+}
+.List input[type=submit]:hover {
+  background-color: #45a049;
+}
+.List input[type=text], input[type=submit]{
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.List {
+  width: 70%;
+  display: inline-block;
+}
+
+.ListAdder {
+  width: 100%;
+}
+
+@media screen and (max-width: 530px) {
+  .List {
+    width: 98%;
+  }
+  .List input[type=submit] {
+    width: 20%;
+    padding: 12px 10px;
+  }
+}

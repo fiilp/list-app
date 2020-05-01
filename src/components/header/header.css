@@ -3,3 +3,9 @@
     background-color: #E63946;
     height: 100px;
 }
+
+
+.Header .Menu {
+  margin-left: auto;
+  margin-right: 1em;
+}

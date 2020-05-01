@@ -2,8 +2,8 @@ import m from 'mithril';
 import './header.css';
 
 let Header = {
-    view: () => m('div', {class:'Header flex a-i-center'},[
-        m('h1', 'List Collaboration!')
+    view: () => m('div', {class:'Header flex super-center'},[
+        m('h1', 'List collaboration!')
     ])
 };
 
