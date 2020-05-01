@@ -7,6 +7,9 @@ class Server {
     }
     init(){
         app.use(express.static('public'));
+        app.listen(6001, () => {
+            console.log('starting server...');
+        })
     }
 }
 new Server();
