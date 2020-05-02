@@ -1,8 +1,16 @@
-.List input[type=text]{
+.List .ItemAdder input[type=text]{
   width: 75%;
 }
+.List .ListConnector {
+  width: 200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.List .ListConnector input[type=text]{
+  width: 80px;
+}
 .List input[type=submit]{
-  margin-left: 1em;
+  float: right;
   background-color: #4CAF50;
   color: #F1FAEE;
   font-weight: bold;
@@ -10,6 +18,7 @@
 .List input[type=submit]:hover {
   background-color: #45a049;
 }
+
 .List input[type=text], input[type=submit]{
   padding: 12px 20px;
   margin: 8px 0;
@@ -22,17 +31,58 @@
 .List {
   width: 70%;
   display: inline-block;
+  margin-bottom: 1em;
 }
 
-.ListAdder {
+.List .items {
+  background-color: #457B9D;
+  border: 1px solid black;
+  margin-top: 1em;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 716px;
+}
+
+.ItemAdder {
   width: 100%;
+}
+.List .ListItem {
+  margin: 0.5em;
+  width: calc(100% - 32px);
+  max-width: 668px;
+  padding: 1em;
+  background-color: #F1FAEE;
+  color: black;
+  font-weight: 500;
+}
+
+.List .ListItem:nth-child(even) {
+  background-color: #1D3557;
+  color: #F1FAEE;
+}
+
+.List .ListItem > p{
+  flex: 1;
+}
+.List .ListItem > button{
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #E63946;
+  color: white;
+  width: 30px;
+  font-size: 120%;
+}
+
+.List .ListItem > button:hover {
+  background-color: #BF2B35;
 }
 
 @media screen and (max-width: 530px) {
   .List {
     width: 98%;
   }
-  .List input[type=submit] {
+  .List .ItemAdder input[type=submit] {
     width: 20%;
     padding: 12px 10px;
   }
