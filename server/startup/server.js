@@ -31,7 +31,7 @@ class Server {
             this.removeFromList(item);
           });
         });
-        server.listen(6001, () => {
+        server.listen(process.env.PORT || 6001, () => {
             console.log('starting server...');
         })
     }
