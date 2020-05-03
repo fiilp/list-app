@@ -44,9 +44,10 @@ let ListConnector = {
   // TODO: Have oninput and onclick as attributes for more flexiblity.
   oi: e => listId = e.target.value,
   oc: e => {
+    setCookie('previous', listId);
     window.location.href = window.location.origin.concat(`/?list=${listId}`)
-    if(setId) removeListSubscribtion(setId);
-    getListById(listId);
+    /*if(setId) removeListSubscribtion(setId);
+    getListById(listId);*/
   },
   view: () => m('div', {class: 'ListConnector flex super-center'}, [
     m('input', {type: 'text', text: setId, oninput: ListConnector.oi, placeholder: setId || 'ID...'}),
