@@ -10,7 +10,7 @@
   width: 80px;
 }
 .List input[type=submit]{
-  float: right;
+  margin-left: 0.5em; 
   background-color: #4CAF50;
   color: #F1FAEE;
   font-weight: bold;

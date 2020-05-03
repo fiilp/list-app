@@ -11,59 +11,68 @@ import './list.css';
 import {setCookie, getCookie} from './../../utility/cookies';
 
 const socket = io();
-socket.on('connect', () => {
-  console.log('connected');
-});
 
 let itemInput = '';
 let listId = '';
 let setId = '';
 
-if(getCookie('previous')){
-  setId = getCookie('previous');
-  m.request({
-      url: '/getList',
-      method: 'GET',
-      params: { listId: setId }
-  })
-  .then(r => List.addArray(r));
-  socket.on(`${setId}`, (items) => {
-    console.log('updated list: ' + JSON.parse(items));
-    List.addArray(JSON.parse(items));
-  });
-}
-console.log('current setId: ' + setId);
-let ListConnector = {
-  oi: e => listId = e.target.value,
-  oc: e => {
-    setId = listId;
-    setCookie('previous', setId);
-    socket.on(`${setId}`, (items) => {
-      console.log('updated list: ' + JSON.parse(items));
-      List.addArray(JSON.parse(items));
-    });
-    console.log('listId: ' + listId);
-    console.log('setId: ' + setId);
+const getListById = (toSet) => {
+  if(toSet){
+    setId = toSet;
     m.request({
         url: '/getList',
         method: 'GET',
         params: { listId: setId }
     })
     .then(r => List.addArray(r));
+    socket.on(`${setId}`, (items) => {
+      List.addArray(JSON.parse(items));
+    });
+  }
+};
+
+const removeListSubscribtion = (r) => {
+  socket.off(r); // stops listening to the "news" event
+};
+
+if(getCookie('previous')) getListById(getCookie('previous'));
+
+/**
+* Used to connect to a list based on ID.
+*/
+let ListConnector = {
+  // TODO: Have oninput and onclick as attributes for more flexiblity.
+  oi: e => listId = e.target.value,
+  oc: e => {
+    if(setId) removeListSubscribtion(setId);
+    getListById(listId);
+    setCookie('previous', setId);
   },
-  view: () => m('div', {class: 'ListConnector'}, [
+  view: () => m('div', {class: 'ListConnector flex super-center'}, [
     m('input', {type: 'text', text: setId, oninput: ListConnector.oi, placeholder: setId || 'ID...'}),
     m('input', {type: 'submit', onclick: ListConnector.oc, value: 'GET'})
   ])
 };
 
+/**
+* Component for putting the item name and then adding it to the list.
+*
+* @attribute  oiCb  Callback for when ever input is put into the text input.
+* @attribute  ocCb  Callback for when the add button is clicked.
+*/
 let ItemAdder = {
-  view: (vnode) => m('div', {class: 'ItemAdder'}, [
+  view: (vnode) => m('div', {class: 'ItemAdder flex super-center'}, [
     m('input', {type: 'text', oninput: vnode.attrs.oiCb, placeholder: 'Item...'}),
     m('input', {type: 'submit', onclick: vnode.attrs.ocCb, value: '+ Add'})
   ])
 };
 
+/**
+* Component for items added to the list.
+*
+* @attribute  item  A string with the name of the item to be added.
+* @attribute  ocCb  Callback when clicking the remove-button of the item.
+*/
 let ListItem = {
   view: (vnode) => m('div', {class: 'ListItem flex'}, [
     m('p', vnode.attrs.item),
@@ -71,6 +80,9 @@ let ListItem = {
   ])
 };
 
+/**
+* Renders all the components needed for the list
+*/
 let List = {
   textEntered: '',
   items: [],
@@ -79,7 +91,6 @@ let List = {
     m.redraw();
   },
   onRemove: (e) => {
-    console.log(e);
     socket.emit('remove item', JSON.stringify({
       item: e.target.previousElementSibling.innerHTML,
       id: setId
@@ -87,8 +98,10 @@ let List = {
   },
   onInput: (e) => List.textEntered = e.target.value,
   onAdd: (e) => {
-    socket.emit('add item', JSON.stringify({item: List.textEntered, id: setId}));
-    e.target.previousElementSibling.value = '';
+    if(setId){
+      socket.emit('add item', JSON.stringify({item: List.textEntered, id: setId}));
+      e.target.previousElementSibling.value = '';
+    }
   },
   view: () => m('div', {class: 'List'}, [
       m(ListConnector),
