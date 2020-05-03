@@ -19,6 +19,7 @@ let setId = '';
 const getListById = (toSet) => {
   if(toSet){
     setId = toSet;
+    setCookie('previous', setId);
     m.request({
         url: '/getList',
         method: 'GET',
@@ -35,7 +36,6 @@ const removeListSubscribtion = (r) => {
   socket.off(r); // stops listening to the "news" event
 };
 
-if(getCookie('previous')) getListById(getCookie('previous'));
 
 /**
 * Used to connect to a list based on ID.
@@ -44,9 +44,9 @@ let ListConnector = {
   // TODO: Have oninput and onclick as attributes for more flexiblity.
   oi: e => listId = e.target.value,
   oc: e => {
+    window.location.href = window.location.origin.concat(`/?list=${listId}`)
     if(setId) removeListSubscribtion(setId);
     getListById(listId);
-    setCookie('previous', setId);
   },
   view: () => m('div', {class: 'ListConnector flex super-center'}, [
     m('input', {type: 'text', text: setId, oninput: ListConnector.oi, placeholder: setId || 'ID...'}),
@@ -102,6 +102,12 @@ let List = {
       socket.emit('add item', JSON.stringify({item: List.textEntered, id: setId}));
       e.target.previousElementSibling.value = '';
     }
+  },
+  oninit: () => {
+    const params = location.search.split('=');
+    if(params[0] === '?list') getListById(params[1]);
+    else
+      if(getCookie('previous')) getListById(getCookie('previous'));
   },
   view: () => m('div', {class: 'List'}, [
       m(ListConnector),
