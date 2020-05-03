@@ -1,7 +1,11 @@
 .Header {
     width: 100%;
-    background-color: #E63946;
+    background-color: #87bba2;
     height: 100px;
+    color: #364958;
+    font-family: 'Roboto slab', cursive;
+    font-weight: lighter;
+    font-size: 200%;
 }
 
 

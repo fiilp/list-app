@@ -3,7 +3,7 @@ import './header.css';
 
 let Header = {
     view: () => m('div', {class:'Header flex super-center'},[
-        m('h1', 'List collaboration!')
+        m('p', 'List collaboration')
     ])
 };
 

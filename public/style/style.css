@@ -6,8 +6,8 @@ html, body {
     height: 100%;
 }
 body {
-    font-family: 'Roboto', sans-serif;
-    background-color: #1D3557;
+    font-family: 'Roboto slab', sans-serif;
+    background-color: #c9e4ca;
     color: #F1FAEE;
 }
 #root {

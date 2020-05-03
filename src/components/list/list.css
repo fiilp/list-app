@@ -10,13 +10,13 @@
   width: 80px;
 }
 .List input[type=submit]{
-  margin-left: 0.5em; 
-  background-color: #4CAF50;
+  margin-left: 0.5em;
+  background-color: #364958;
   color: #F1FAEE;
   font-weight: bold;
 }
 .List input[type=submit]:hover {
-  background-color: #45a049;
+  opacity: 0.8;
 }
 
 .List input[type=text], input[type=submit]{
@@ -35,8 +35,7 @@
 }
 
 .List .items {
-  background-color: #457B9D;
-  border: 1px solid black;
+  border: 1px solid #c9e4ca;
   margin-top: 1em;
   margin-left: auto;
   margin-right: auto;
@@ -47,19 +46,22 @@
   width: 100%;
 }
 .List .ListItem {
-  margin: 0.5em;
+  margin: 0.2em;
   width: calc(100% - 32px);
   max-width: 668px;
   padding: 1em;
-  background-color: #F1FAEE;
+  background-color: white;
   color: black;
-  font-weight: 500;
+  font-weight: bold;
+  /*border: 1px solid;*/
+  border-radius: 12px;
+  box-shadow: 3px 4px #9eb39f;
 }
 
-.List .ListItem:nth-child(even) {
+/*.List .ListItem:nth-child(even) {
   background-color: #1D3557;
   color: #F1FAEE;
-}
+}*/
 
 .List .ListItem > p{
   flex: 1;

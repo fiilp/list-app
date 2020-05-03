@@ -50,7 +50,7 @@ let ListConnector = {
   },
   view: () => m('div', {class: 'ListConnector flex super-center'}, [
     m('input', {type: 'text', text: setId, oninput: ListConnector.oi, placeholder: setId || 'ID...'}),
-    m('input', {type: 'submit', onclick: ListConnector.oc, value: 'GET'})
+    m('input', {type: 'submit', onclick: ListConnector.oc, value: 'Join'})
   ])
 };
 
