@@ -53,7 +53,6 @@
   background-color: white;
   color: black;
   font-weight: bold;
-  /*border: 1px solid;*/
   border-radius: 12px;
   box-shadow: 3px 4px #9eb39f;
 }
@@ -65,6 +64,7 @@
 
 .List .ListItem > p{
   flex: 1;
+  margin-right: 0.3em;
 }
 .List .ListItem > button{
   text-align: center;

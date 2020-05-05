@@ -1,14 +1,14 @@
 .Header {
     width: 100%;
     background-color: #87bba2;
-    height: 100px;
     color: #364958;
     font-family: 'Roboto slab', cursive;
     font-weight: lighter;
-    font-size: 200%;
 }
 
-
+.Header h1 {
+  margin: 0.3em;
+}
 .Header .Menu {
   margin-left: auto;
   margin-right: 1em;
