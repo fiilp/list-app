@@ -73,6 +73,7 @@
   background-color: #E63946;
   color: white;
   width: 30px;
+  max-height: 24px;
   font-size: 120%;
 }
 
