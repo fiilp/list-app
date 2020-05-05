@@ -10,16 +10,20 @@ let Links = {
 }
 let Menu = {
   toShow: undefined,
-  toggle: () => {
+  toggle: (e) => {
+    console.log(e);
     if(!Menu.toShow) Menu.toShow = m(Links);
     else Menu.toShow = undefined;
     m.redraw();
+    e.currentTarget.classList.toggle('change');
   },
   onupdate: () => console.log(!Menu.toShow),
-  view: () => m('div', {class: 'Menu', onclick: Menu.toggle},[
-    m('a', {class: 'menu-icon', href: 'javascript:void(0)', }, [
-      m('i', {class:'fa fa-bars'})
-    ]),
+  view: () => m('div', {class: 'Menu'}, [
+      m('div', {class: 'burger', onclick: Menu.toggle}, [
+        m('div', {class: 'bar1'}),
+        m('div', {class: 'bar2'}),
+        m('div', {class: 'bar3'})
+      ]),
     Menu.toShow
   ])
 };
