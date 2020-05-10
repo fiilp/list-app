@@ -1,17 +1,17 @@
 import m from 'mithril';
+import {ColorPicker, ListConnector} from './../list/list';
 import  './menu.css';
 
 let Links = {
-  view: () => m('div',{class: 'links'},[
-    m('a', 'Connect to new list'),
-    m('a', 'Create new list'),
-    m('a', 'Sign out')
+  view: () => m('div',{class: 'links flex d-column a-i-center'},[
+    m('p', 'New list'),
+    m(ListConnector),
+    m(ColorPicker)
   ])
 }
 let Menu = {
   toShow: undefined,
   toggle: (e) => {
-    console.log(e);
     if(!Menu.toShow) Menu.toShow = m(Links);
     else Menu.toShow = undefined;
     m.redraw();

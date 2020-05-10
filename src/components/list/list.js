@@ -15,27 +15,21 @@ const socket = io();
 let itemInput = '';
 let listId = '';
 let setId = '';
+let itemColor = '#ffffff';
+let textColor = '#000000';
 
-const getListById = (toSet) => {
-  if(toSet){
-    setId = toSet;
-    setCookie('previous', setId);
-    m.request({
-        url: '/getList',
-        method: 'GET',
-        params: { listId: setId }
-    })
-    .then(r => List.addArray(r));
-    socket.on(`${setId}`, (items) => {
-      List.addArray(JSON.parse(items));
-    });
-  }
+/**
+ * Used to pick color of list item.
+ */
+let ColorPicker = {
+  pick: e => itemColor = e.target.value,
+  view: () => m('div', {class: 'ColorPicker'}, [
+    'Pick background color: ',
+    m('input', {type: 'color', value: itemColor, oninput: ColorPicker.pick}),
+    'Pick text color: ',
+    m('input', {type: 'color', value: '#000000'}),
+  ])
 };
-
-const removeListSubscribtion = (r) => {
-  socket.off(r); // stops listening to the "news" event
-};
-
 
 /**
 * Used to connect to a list based on ID.
@@ -44,14 +38,14 @@ let ListConnector = {
   // TODO: Have oninput and onclick as attributes for more flexiblity.
   oi: e => listId = e.target.value,
   oc: e => {
-    setCookie('previous', listId);
-    window.location.href = window.location.origin.concat(`/?list=${listId}`)
-    /*if(setId) removeListSubscribtion(setId);
-    getListById(listId);*/
+    if(listId){
+      setCookie('previous', listId);
+      window.location.href = window.location.origin.concat(`/?list=${listId}`);
+    }
   },
   view: () => m('div', {class: 'ListConnector flex super-center'}, [
     m('input', {type: 'text', text: setId, oninput: ListConnector.oi, placeholder: setId || 'ID...'}),
-    m('input', {type: 'submit', onclick: ListConnector.oc, value: 'Join'})
+    m('input', {type: 'submit', onclick: ListConnector.oc, value: 'Create'})
   ])
 };
 
@@ -76,7 +70,11 @@ let ItemAdder = {
 */
 let ListItem = {
   view: (vnode) => m('div', 
-  {class: 'ListItem flex a-i-center', draggable: "true"}, [
+  {
+    class: 'ListItem flex a-i-center',
+    draggable: "true",
+    style: `background-color: ${vnode.attrs.color || itemColor};`
+  }, [
     m('p', vnode.attrs.item),
     m('button', {onclick: vnode.attrs.ocCb}, 'X')
   ])
@@ -86,34 +84,79 @@ let ListItem = {
 * Renders all the components needed for the list
 */
 let List = {
+  inList: false,
   textEntered: '',
   items: [],
+  content: () => {
+    if(List.inList)
+      return [
+        m(ItemAdder, {oiCb: List.onInput, ocCb: List.onAdd}),
+        m('div', {class: 'items flex a-i-center d-column'}, List.items)
+      ]; 
+    else {
+      let content = [m(ListConnector)];
+      if(getCookie('previous'))
+      content = content.concat(
+          m('a', {href: `/?list=${getCookie('previous')}`}, 'Recent list'));
+      return content; //TODO: concat short app description
+    };  
+  },
   addArray: (a) => {
-    List.items = a.map( i => m(ListItem, {item: i, ocCb: List.onRemove}));
+    List.items = a.map( i => m(ListItem, {item: i.item, color: i.color, ocCb: List.onRemove}));   
     m.redraw();
   },
   onRemove: (e) => {
-    socket.emit('remove item', JSON.stringify({
-      item: e.target.previousElementSibling.innerHTML,
-      id: setId
-    }));
+    removeItem(e.target.previousElementSibling.innerHTML);
   },
   onInput: (e) => List.textEntered = e.target.value,
   onAdd: (e) => {
     if(setId){
-      socket.emit('add item', JSON.stringify({item: List.textEntered, id: setId}));
+      addItem(List.textEntered);
       e.target.previousElementSibling.value = '';
     }
   },
   oninit: () => {
     const params = location.search.split('=');
-    if(params[0] === '?list') getListById(params[1]);
+    List.inList = params[0] === '?list';
+    if(List.inList) getListById(params[1]);
     else
-      if(getCookie('previous')) getListById(getCookie('previous'));
+      console.log(); //if(getCookie('previous')) getListById(getCookie('previous'));
   },
   view: () => m('div', {class: 'List'}, [
-      m(ListConnector),
-      m(ItemAdder, {oiCb: List.onInput, ocCb: List.onAdd}),
-      m('div', {class: 'items flex a-i-center d-column'}, List.items)
+      [...List.content()]
   ])
-}; export default List;
+}; 
+export default List;
+export {ColorPicker, ListConnector};
+
+/*------------------------- HELPER FUNCTIONS -------------------------*/
+const getListById = (toSet) => {
+  if(toSet){
+    setId = toSet;
+    setCookie('previous', setId);
+    m.request({
+        url: '/getList',
+        method: 'GET',
+        params: { listId: setId }
+    })
+    .then(r => List.addArray(r));
+    socket.on(`${setId}`, (items) => {
+      List.addArray(JSON.parse(items));
+    });
+  }
+};
+
+const addItem = item => {
+  socket.emit('add item', JSON.stringify({item, id: setId, color: itemColor}));
+}
+
+const removeItem = item => {
+  socket.emit('remove item', JSON.stringify({
+    item,
+    id: setId
+  }));
+}
+
+const removeListSubscribtion = (r) => {
+  socket.off(r); // stops listening to the "news" event
+};

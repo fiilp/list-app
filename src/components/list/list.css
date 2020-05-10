@@ -2,9 +2,9 @@
   width: 75%;
 }
 .List .ListConnector {
-  width: 200px;
-  margin-left: auto;
   margin-right: auto;
+  margin-left: auto;
+  width: 200px;
 }
 .List .ListConnector input[type=text]{
   width: 80px;
@@ -33,7 +33,18 @@
   display: inline-block;
   margin-bottom: 1em;
 }
-
+.List a {
+  display: block;
+  text-align: center;
+  width: 110px;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 120%;
+  margin-top: 1.5em;
+  color: #364958;
+  font-weight: bold;
+  text-decoration: none;
+}
 .List .items {
   border: 1px solid #c9e4ca;
   margin-top: 1em;
@@ -65,6 +76,7 @@
 .List .ListItem > p{
   flex: 1;
   margin-right: 0.3em;
+  word-break: break-all;
 }
 .List .ListItem > button{
   text-align: center;
