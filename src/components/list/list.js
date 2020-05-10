@@ -75,7 +75,8 @@ let ItemAdder = {
 * @attribute  ocCb  Callback when clicking the remove-button of the item.
 */
 let ListItem = {
-  view: (vnode) => m('div', {class: 'ListItem flex a-i-center'}, [
+  view: (vnode) => m('div', 
+  {class: 'ListItem flex a-i-center', draggable: "true"}, [
     m('p', vnode.attrs.item),
     m('button', {onclick: vnode.attrs.ocCb}, 'X')
   ])
