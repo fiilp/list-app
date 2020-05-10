@@ -1,6 +1,10 @@
 .List .ItemAdder input[type=text]{
   width: 75%;
 }
+
+.ListConnector {
+  color: black;
+}
 .List .ListConnector {
   margin-right: auto;
   margin-left: auto;
@@ -33,10 +37,16 @@
   display: inline-block;
   margin-bottom: 1em;
 }
+.List .desc {
+  color: black;
+  margin-top: 1em;
+  text-align: center;
+  font-weight: bold;
+}
 .List a {
   display: block;
   text-align: center;
-  width: 110px;
+  width: 300px;
   margin-left: auto;
   margin-right: auto;
   font-size: 120%;

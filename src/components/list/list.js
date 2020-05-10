@@ -12,22 +12,32 @@ import {setCookie, getCookie} from './../../utility/cookies';
 
 const socket = io();
 
+let listTitle = '';
 let itemInput = '';
 let listId = '';
 let setId = '';
-let itemColor = '#ffffff';
-let textColor = '#000000';
+let itemColor = getCookie('itemColor') || '#ffffff';
+let recentItemColors = [];
+let textColor = getCookie('textColor') || '#000000';
+let recentTextColors = [];
+
 
 /**
  * Used to pick color of list item.
  */
 let ColorPicker = {
-  pick: e => itemColor = e.target.value,
+  recentItemColors: () => undefined,
+  pickText: e=> textColor = e.target.value,
+  pickItem: e => itemColor = e.target.value,
   view: () => m('div', {class: 'ColorPicker'}, [
-    'Pick background color: ',
-    m('input', {type: 'color', value: itemColor, oninput: ColorPicker.pick}),
-    'Pick text color: ',
-    m('input', {type: 'color', value: '#000000'}),
+    m('div', {class: 'picker'}, [
+      'Pick background color: ',
+      m('input', {type: 'color', value: itemColor, oninput: ColorPicker.pickItem})
+    ]),
+    m('div', {class: 'picker'}, [
+      'Pick text color: ',
+      m('input', {type: 'color', value: textColor, oninput: ColorPicker.pickText}),
+    ]),
   ])
 };
 
@@ -36,17 +46,32 @@ let ColorPicker = {
 */
 let ListConnector = {
   // TODO: Have oninput and onclick as attributes for more flexiblity.
+  loading: false,
+  displayLoading: () =>  m('p', 'LOADING LIST...'),
+  content: (vnode) => { 
+    console.log('about to');
+    
+    if(!vnode.state.loading)
+      return [
+        m('input', {type: 'text', text: setId, oninput: ListConnector.oi, placeholder: 'Name...'}),
+        m('input', {type: 'submit', onclick: () => {ListConnector.oc(vnode)}, value: 'Create'})
+      ]
+    else return ListConnector.displayLoading();
+  },
   oi: e => listId = e.target.value,
-  oc: e => {
+  oc: vnode => {
     if(listId){
-      setCookie('previous', listId);
-      window.location.href = window.location.origin.concat(`/?list=${listId}`);
+      //vnode.state.loading = true;
+      console.log(vnode);
+      m.redraw();
+      createList(listId);
     }
   },
-  view: () => m('div', {class: 'ListConnector flex super-center'}, [
-    m('input', {type: 'text', text: setId, oninput: ListConnector.oi, placeholder: setId || 'ID...'}),
-    m('input', {type: 'submit', onclick: ListConnector.oc, value: 'Create'})
-  ])
+  oninit: () => console.log('created'),
+  onremove: () => console.log('was removed'),
+  view: (vnode) => m('div', {class: 'ListConnector flex super-center'},
+    ListConnector.content(vnode)
+  )
 };
 
 /**
@@ -75,7 +100,7 @@ let ListItem = {
     draggable: "true",
     style: `background-color: ${vnode.attrs.color || itemColor};`
   }, [
-    m('p', vnode.attrs.item),
+    m('p', {style: `color: ${vnode.attrs.textColor || textColor}`}, vnode.attrs.item),
     m('button', {onclick: vnode.attrs.ocCb}, 'X')
   ])
 };
@@ -98,11 +123,21 @@ let List = {
       if(getCookie('previous'))
       content = content.concat(
           m('a', {href: `/?list=${getCookie('previous')}`}, 'Recent list'));
-      return content; //TODO: concat short app description
+      return content.concat(
+        m('p', {class: 'desc'}, 'Every new list creates a unique URL. Share the URL to collaborate with others on your list.')
+      ); 
     };  
   },
   addArray: (a) => {
-    List.items = a.map( i => m(ListItem, {item: i.item, color: i.color, ocCb: List.onRemove}));   
+    List.items = a.map( i => m(
+      ListItem, 
+      {
+        item: i.item, 
+        textColor: i.textColor, 
+        color: i.color,
+        ocCb: List.onRemove
+      }
+    ));   
     m.redraw();
   },
   onRemove: (e) => {
@@ -119,8 +154,6 @@ let List = {
     const params = location.search.split('=');
     List.inList = params[0] === '?list';
     if(List.inList) getListById(params[1]);
-    else
-      console.log(); //if(getCookie('previous')) getListById(getCookie('previous'));
   },
   view: () => m('div', {class: 'List'}, [
       [...List.content()]
@@ -139,15 +172,31 @@ const getListById = (toSet) => {
         method: 'GET',
         params: { listId: setId }
     })
-    .then(r => List.addArray(r));
-    socket.on(`${setId}`, (items) => {
-      List.addArray(JSON.parse(items));
+    .then(r => List.addArray(r.items));
+    socket.on(`${setId}`, (list) => {
+      List.addArray(JSON.parse(list).items);
     });
   }
 };
 
+const createList = (toSet) => {
+  m.request({
+    url: '/createList',
+    method: 'POST',
+    headers: {
+      redirect: 'follow'
+    },
+    params: { listId: toSet }
+  })
+  .then(id =>
+    window.location.href = window.location.origin.concat(`/?list=${id.id}`)
+  );
+}
+
 const addItem = item => {
-  socket.emit('add item', JSON.stringify({item, id: setId, color: itemColor}));
+  setCookie('itemColor', itemColor);
+  setCookie('textColor', textColor);
+  socket.emit('add item', JSON.stringify({item, id: setId, color: itemColor, textColor}));
 }
 
 const removeItem = item => {

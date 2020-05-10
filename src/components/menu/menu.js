@@ -3,10 +3,20 @@ import {ColorPicker, ListConnector} from './../list/list';
 import  './menu.css';
 
 let Links = {
+  showShare: () => {
+    if(window.location.href.includes('?list='))
+      return m('div', {class: 'sharable'},[
+        m('input', 
+          {type: 'text', readonly: 'readonly', id: 'share', value: window.location.href}
+        ),
+        m('input', {type: 'submit', id: 'share', value: 'Copy URL', onclick: copyURL}),
+      ]);
+  },
   view: () => m('div',{class: 'links flex d-column a-i-center'},[
     m('p', 'New list'),
     m(ListConnector),
-    m(ColorPicker)
+    m(ColorPicker),
+    Links.showShare()
   ])
 }
 let Menu = {
@@ -17,7 +27,6 @@ let Menu = {
     m.redraw();
     e.currentTarget.classList.toggle('change');
   },
-  onupdate: () => console.log(!Menu.toShow),
   view: () => m('div', {class: 'Menu'}, [
       m('div', {class: 'burger', onclick: Menu.toggle}, [
         m('div', {class: 'bar1'}),
@@ -26,6 +35,13 @@ let Menu = {
       ]),
     Menu.toShow
   ])
+};
+
+const copyURL = () => {
+  var copyText = document.getElementById("share");
+  copyText.select();
+  copyText.setSelectionRange(0, 99999)
+  document.execCommand("copy");
 };
 
 export default Menu;

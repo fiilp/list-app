@@ -28,14 +28,13 @@ const db = admin.firestore();
 /**
 * Returns a list of items.
 * @param    list  the name of the list of items to get.
-* @returns        returns an array of items. If the list doesn't exist,
-*                 undefined is returned.
+* @returns        retuns list object. {name, lastUsed, items}
 */
 const getList = (list) => {
   return db.collection('lists').doc(list).get()
   .then(doc => {
     if(!doc.exists) return undefined;
-    else return doc.data().items
+    else return doc.data();
   })
 };
 
@@ -45,7 +44,19 @@ const getList = (list) => {
 * @param  items items to be set in the list.
 */
 const setList = (list, items) => {
-  db.collection('lists').doc(list).set({ items });
+  db.collection('lists').doc(list).set(items);
 };
 
-module.exports = {getList, setList};
+/**
+ * Creates a document in the database for a new list.
+ * 
+ * @param name  the name of the list (NOT the ID of the list).
+ * @returns     a promise that will contain the ID of the document.
+ */
+const createList = (name) => {
+  return db.collection('lists').add({
+    name: name,
+    items: []
+  }).then(docRef => docRef.id);
+};
+module.exports = {getList, setList, createList};

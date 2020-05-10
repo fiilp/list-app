@@ -6,6 +6,14 @@
   right: 0;
 }
 
+.Menu .picker {
+  align-items: center;
+  text-align: left;
+  display: flex;
+  min-width: 310px;
+  width: 95%;
+  max-width: 370px;
+}
 .Menu .links {
   color: white;
   width: 100vw;
@@ -17,6 +25,7 @@
 
 .Menu .ColorPicker input{
   display: block;
+  margin-left: auto;
 }
 .Menu .links a{
   color: white;

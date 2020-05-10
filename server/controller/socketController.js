@@ -28,19 +28,26 @@ const ioInit = (io, lists) => {
 /**
  * Adds a single item to the list.
  * 
- * @param  item   item to add. {item, id}
+ * @param  item   item to add. {item, id, color, textColor}
  * @param  io     io socket of the web server.
  * @param  lists  contains all of the lists that currently are
  *                cached.
  */
-const addToList = (item, io, lists) => {
+const addToList = async (item, io, lists) => {
   const o = JSON.parse(item);
   if(lists[o.id]) itemExists(o, lists);
   else {
-    lists[o.id] = [];
-     setTimeout(() => {io.emit(`${o.id}`, JSON.stringify([])); delete lists[o.id]}, DELETE_TIMEOUT);
-   };
-  lists[o.id] = [{item: o.item, color: o.color}].concat(lists[o.id]);
+    lists[o.id] = {items: []};
+    const doc = await getList(o.id);
+    lists[o.id]['name'] = doc.name;
+    setTimeout(() => {io.emit(`${o.id}`, JSON.stringify([])); delete lists[o.id]}, DELETE_TIMEOUT);
+  };
+  lists[o.id].items = [{
+    item: o.item, 
+    color: o.color, 
+    textColor: o.textColor,
+    created: Date.parse(new Date())
+  }].concat(lists[o.id].items);
   setList(o.id, lists[o.id]);
   io.emit(`${o.id}`, JSON.stringify(lists[o.id]));
 };
@@ -53,7 +60,8 @@ const addToList = (item, io, lists) => {
  *                cached.
  */
 const itemExists = (item, lists) => {
-  lists[item.id] = lists[item.id].filter(e => e.item != item.item);
+  lists[item.id].items = lists[item.id]
+    .items.filter(e => e.item != item.item);
 };
 
 /**
