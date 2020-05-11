@@ -1,7 +1,11 @@
 .List .ItemAdder input[type=text]{
   width: 75%;
 }
-
+.List h2 {
+  font-size: 140%;
+  color: black;
+  text-align: center;
+}
 .ListConnector {
   color: black;
 }

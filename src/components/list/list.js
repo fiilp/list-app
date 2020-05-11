@@ -9,6 +9,7 @@ import m from 'mithril';
 import io from 'socket.io-client';
 import './list.css';
 import {setCookie, getCookie} from './../../utility/cookies';
+import listModel from '../../model/listModel';
 
 const socket = io();
 
@@ -17,27 +18,51 @@ let itemInput = '';
 let listId = '';
 let setId = '';
 let itemColor = getCookie('itemColor') || '#ffffff';
-let recentItemColors = [];
+let itemColors = [];
 let textColor = getCookie('textColor') || '#000000';
-let recentTextColors = [];
+let textColors = [];
 
+listModel['itemColor'] = getCookie('itemColor') || '#ffffff';
+listModel['textColor'] = getCookie('textColor') || '#ffffff';
+
+let RecentColors = {
+  view: vnode => m('div', {class: 'RecentColors flex'}, [
+    vnode.attrs.source.map(c => m('div',{ 
+      class: 'color',
+      style: `background-color: ${c}`,
+      onclick: e => {vnode.attrs.oc(e); m.redraw();}
+    }))
+  ])
+}
 
 /**
  * Used to pick color of list item.
  */
 let ColorPicker = {
-  recentItemColors: () => undefined,
+  toHex: (rgb) => '#'.concat(
+    rgb.substring(4, rgb.length-1)
+    .replace(/ /g, '')
+    .split(',')
+    .map(e => parseInt(e, 10))
+    .map(e => e.toString(16))
+    .reduce((a,b) => a+b)
+  ),
+  c: itemColor,
   pickText: e=> textColor = e.target.value,
+  recentText: e => textColor = ColorPicker.toHex(e.target.style.backgroundColor),
   pickItem: e => itemColor = e.target.value,
-  view: () => m('div', {class: 'ColorPicker'}, [
+  recentItem: e => ColorPicker.c = ColorPicker.toHex(e.target.style.backgroundColor),
+  view: (vnode) => m('div', {class: 'ColorPicker'}, [
     m('div', {class: 'picker'}, [
       'Pick background color: ',
-      m('input', {type: 'color', value: itemColor, oninput: ColorPicker.pickItem})
+      m('input', {type: 'color', value: ColorPicker.c, oninput: ColorPicker.pickItem})
     ]),
+    m(RecentColors, {source: itemColors, oc: e => ColorPicker.recentItem}),
     m('div', {class: 'picker'}, [
       'Pick text color: ',
       m('input', {type: 'color', value: textColor, oninput: ColorPicker.pickText}),
     ]),
+    m(RecentColors, {source: textColors, oc: ColorPicker.recentText}),
   ])
 };
 
@@ -49,8 +74,7 @@ let ListConnector = {
   loading: false,
   displayLoading: () =>  m('p', 'LOADING LIST...'),
   content: (vnode) => { 
-    console.log('about to');
-    
+
     if(!vnode.state.loading)
       return [
         m('input', {type: 'text', text: setId, oninput: ListConnector.oi, placeholder: 'Name...'}),
@@ -62,13 +86,10 @@ let ListConnector = {
   oc: vnode => {
     if(listId){
       //vnode.state.loading = true;
-      console.log(vnode);
       m.redraw();
       createList(listId);
     }
   },
-  oninit: () => console.log('created'),
-  onremove: () => console.log('was removed'),
   view: (vnode) => m('div', {class: 'ListConnector flex super-center'},
     ListConnector.content(vnode)
   )
@@ -115,6 +136,7 @@ let List = {
   content: () => {
     if(List.inList)
       return [
+        m('h2', listTitle),
         m(ItemAdder, {oiCb: List.onInput, ocCb: List.onAdd}),
         m('div', {class: 'items flex a-i-center d-column'}, List.items)
       ]; 
@@ -129,6 +151,7 @@ let List = {
     };  
   },
   addArray: (a) => {
+    usedColors(a);
     List.items = a.map( i => m(
       ListItem, 
       {
@@ -160,7 +183,7 @@ let List = {
   ])
 }; 
 export default List;
-export {ColorPicker, ListConnector};
+export {ColorPicker, ListConnector, textColors, itemColors};
 
 /*------------------------- HELPER FUNCTIONS -------------------------*/
 const getListById = (toSet) => {
@@ -172,7 +195,10 @@ const getListById = (toSet) => {
         method: 'GET',
         params: { listId: setId }
     })
-    .then(r => List.addArray(r.items));
+    .then(r =>{ 
+      listTitle = r.name;
+      List.addArray(r.items)
+    });
     socket.on(`${setId}`, (list) => {
       List.addArray(JSON.parse(list).items);
     });
@@ -209,3 +235,9 @@ const removeItem = item => {
 const removeListSubscribtion = (r) => {
   socket.off(r); // stops listening to the "news" event
 };
+
+const usedColors = a => {
+  const u = (v, i, a) => a.indexOf(v) === i;
+  itemColors = a.map(e => e.color).filter(u).slice(0, 11);
+  textColors = a.map(e => e.textColor).filter(u).slice(0, 11);
+}

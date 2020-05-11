@@ -23,13 +23,22 @@
   font-size: 25px;
 }
 
+.Menu .links > * {
+  padding: 0.1em 0;
+}
+.Menu .color {
+  width: 30px;
+  height: 30px;
+  margin: 5px;
+  cursor: pointer;
+}
 .Menu .ColorPicker input{
   display: block;
   margin-left: auto;
 }
 .Menu .links a{
   color: white;
-  padding: 5px 16px;
+  /*padding: 5px 16px;*/
   text-decoration: none;
   display: block;
   margin-top: 0.2em;

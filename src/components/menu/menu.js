@@ -1,5 +1,8 @@
 import m from 'mithril';
-import {ColorPicker, ListConnector} from './../list/list';
+import {
+  ColorPicker, 
+  ListConnector, 
+  } from './../list/list';
 import  './menu.css';
 
 let Links = {
