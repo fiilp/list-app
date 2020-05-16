@@ -13,24 +13,15 @@ import listModel from '../../model/listModel';
 
 const socket = io();
 
-let listTitle = '';
-let itemInput = '';
-let listId = '';
-let setId = '';
-let itemColor = getCookie('itemColor') || '#ffffff';
-let itemColors = [];
-let textColor = getCookie('textColor') || '#000000';
-let textColors = [];
-
 listModel['itemColor'] = getCookie('itemColor') || '#ffffff';
-listModel['textColor'] = getCookie('textColor') || '#ffffff';
+listModel['textColor'] = getCookie('textColor') || '#000000';
 
 let RecentColors = {
   view: vnode => m('div', {class: 'RecentColors flex'}, [
     vnode.attrs.source.map(c => m('div',{ 
       class: 'color',
       style: `background-color: ${c}`,
-      onclick: e => {vnode.attrs.oc(e); m.redraw();}
+      onclick: vnode.attrs.oc
     }))
   ])
 }
@@ -47,22 +38,21 @@ let ColorPicker = {
     .map(e => e.toString(16))
     .reduce((a,b) => a+b)
   ),
-  c: itemColor,
-  pickText: e=> textColor = e.target.value,
-  recentText: e => textColor = ColorPicker.toHex(e.target.style.backgroundColor),
-  pickItem: e => itemColor = e.target.value,
-  recentItem: e => ColorPicker.c = ColorPicker.toHex(e.target.style.backgroundColor),
-  view: (vnode) => m('div', {class: 'ColorPicker'}, [
+  pickText: e=> listModel['textColor'] = e.target.value,
+  recentText: e => listModel['textColor'] = ColorPicker.toHex(e.target.style.backgroundColor),
+  pickItem: e => listModel['itemColor'] = e.target.value,
+  recentItem: e => listModel['itemColor'] = ColorPicker.toHex(e.target.style.backgroundColor),
+  view: () => m('div', {class: 'ColorPicker'}, [
     m('div', {class: 'picker'}, [
       'Pick background color: ',
-      m('input', {type: 'color', value: ColorPicker.c, oninput: ColorPicker.pickItem})
+      m('input', {type: 'color', value: listModel['itemColor'], oninput: ColorPicker.pickItem})
     ]),
-    m(RecentColors, {source: itemColors, oc: e => ColorPicker.recentItem}),
+    m(RecentColors, {source: listModel['itemColors'], oc: ColorPicker.recentItem}),
     m('div', {class: 'picker'}, [
       'Pick text color: ',
-      m('input', {type: 'color', value: textColor, oninput: ColorPicker.pickText}),
+      m('input', {type: 'color', value: listModel['textColor'], oninput: ColorPicker.pickText}),
     ]),
-    m(RecentColors, {source: textColors, oc: ColorPicker.recentText}),
+    m(RecentColors, {source: listModel['textColors'], oc: ColorPicker.recentText}),
   ])
 };
 
@@ -73,25 +63,25 @@ let ListConnector = {
   // TODO: Have oninput and onclick as attributes for more flexiblity.
   loading: false,
   displayLoading: () =>  m('p', 'LOADING LIST...'),
-  content: (vnode) => { 
+  content: (state) => { 
 
-    if(!vnode.state.loading)
+    if(!ListConnector.loading)
       return [
-        m('input', {type: 'text', text: setId, oninput: ListConnector.oi, placeholder: 'Name...'}),
-        m('input', {type: 'submit', onclick: () => {ListConnector.oc(vnode)}, value: 'Create'})
+        m('input', {type: 'text', oninput: ListConnector.oi, placeholder: 'Name...'}),
+        m('input', {type: 'submit', onclick: ListConnector.oc, value: 'Create'})
       ]
     else return ListConnector.displayLoading();
   },
-  oi: e => listId = e.target.value,
-  oc: vnode => {
-    if(listId){
-      //vnode.state.loading = true;
+  oi: e => listModel.listId = e.target.value,
+  oc: () => {
+    if(listModel.listId){
+      ListConnector.loading = true;
       m.redraw();
-      createList(listId);
+      createList(listModel.listId);
     }
   },
   view: (vnode) => m('div', {class: 'ListConnector flex super-center'},
-    ListConnector.content(vnode)
+    ListConnector.content(vnode.state)
   )
 };
 
@@ -119,9 +109,9 @@ let ListItem = {
   {
     class: 'ListItem flex a-i-center',
     draggable: "true",
-    style: `background-color: ${vnode.attrs.color || itemColor};`
+    style: `background-color: ${vnode.attrs.color || listModel.itemColor};`
   }, [
-    m('p', {style: `color: ${vnode.attrs.textColor || textColor}`}, vnode.attrs.item),
+    m('p', {style: `color: ${vnode.attrs.textColor || listModel['textColor']}`}, vnode.attrs.item),
     m('button', {onclick: vnode.attrs.ocCb}, 'X')
   ])
 };
@@ -136,7 +126,7 @@ let List = {
   content: () => {
     if(List.inList)
       return [
-        m('h2', listTitle),
+        m('h2', listModel['listTitle']),
         m(ItemAdder, {oiCb: List.onInput, ocCb: List.onAdd}),
         m('div', {class: 'items flex a-i-center d-column'}, List.items)
       ]; 
@@ -168,7 +158,7 @@ let List = {
   },
   onInput: (e) => List.textEntered = e.target.value,
   onAdd: (e) => {
-    if(setId){
+    if(listModel.setId){
       addItem(List.textEntered);
       e.target.previousElementSibling.value = '';
     }
@@ -183,23 +173,23 @@ let List = {
   ])
 }; 
 export default List;
-export {ColorPicker, ListConnector, textColors, itemColors};
+export {ColorPicker, ListConnector};
 
 /*------------------------- HELPER FUNCTIONS -------------------------*/
 const getListById = (toSet) => {
   if(toSet){
-    setId = toSet;
-    setCookie('previous', setId);
+    listModel.setId = toSet;
+    setCookie('previous', listModel.setId);
     m.request({
         url: '/getList',
         method: 'GET',
-        params: { listId: setId }
+        params: { listId: listModel.setId }
     })
     .then(r =>{ 
-      listTitle = r.name;
+      listModel['listTitle'] = r.name;
       List.addArray(r.items)
     });
-    socket.on(`${setId}`, (list) => {
+    socket.on(`${listModel.setId}`, (list) => {
       List.addArray(JSON.parse(list).items);
     });
   }
@@ -220,15 +210,21 @@ const createList = (toSet) => {
 }
 
 const addItem = item => {
-  setCookie('itemColor', itemColor);
-  setCookie('textColor', textColor);
-  socket.emit('add item', JSON.stringify({item, id: setId, color: itemColor, textColor}));
+  setCookie('itemColor', listModel.itemColor);
+  setCookie('textColor', listModel.textColor);
+  debugger;
+  socket.emit('add item', JSON.stringify({
+    item,
+    id: listModel.setId, 
+    color: listModel.itemColor, 
+    textColor: listModel.textColor
+  }));
 }
 
 const removeItem = item => {
   socket.emit('remove item', JSON.stringify({
     item,
-    id: setId
+    id: listModel.setId
   }));
 }
 
@@ -238,6 +234,6 @@ const removeListSubscribtion = (r) => {
 
 const usedColors = a => {
   const u = (v, i, a) => a.indexOf(v) === i;
-  itemColors = a.map(e => e.color).filter(u).slice(0, 11);
-  textColors = a.map(e => e.textColor).filter(u).slice(0, 11);
+  listModel.itemColors = a.map(e => e.color).filter(u).slice(0, 11);
+  listModel.textColors = a.map(e => e.textColor).filter(u).slice(0, 11);
 }

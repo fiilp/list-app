@@ -7,15 +7,28 @@
 
 import m from 'mithril';
 import Header from './components/header/header';
+import Menu from './components/menu/menu';
 import List from './components/list/list';
 import './app.css';
 
 
 var App = {
+    toggle: false,
+    content: () => {
+      if(!App.toggle) return m(List);
+      else return m(Menu);
+    },
     view: () => m('div', {class: 'App'}, [
-            m(Header),
+            m(Header, {toggle: () => App.toggle = !App.toggle}),
             m('main', {class: 'flex a-i-center d-column'}, [
-              m(List)
+              App.content()
+            ]),
+            m('footer', {class: 'flex d-column'}, [
+              m('a', {href: 'https://icons8.com/icon/78933/text-height'}, 'Icons from Icons8'),
+              m('div',[
+                'Made by: ',
+                m('a', {href: 'http://filipg.se'}, 'Filip G')
+              ])
             ])
         ]
     )

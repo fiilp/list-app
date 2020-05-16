@@ -1,11 +1,11 @@
 import m from 'mithril';
-import Menu from './../menu/menu';
+import MenuIcon from '../menuIcon/menuIcon';
 import './header.css';
 
 let Header = {
-    view: () => m('div', {class:'Header'},[
+    view: (vnode) => m('div', {class:'Header'},[
         m('h1', 'List collaboration'),
-        m(Menu)
+        m(MenuIcon, {toggle: vnode.attrs.toggle})
     ])
 };
 

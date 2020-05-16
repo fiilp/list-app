@@ -1,109 +1,73 @@
-.Menu {
-  float: right;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  right: 0;
-}
-
+.Menu {width: 100%;}
 .Menu .picker {
-  align-items: center;
-  text-align: left;
-  display: flex;
-  min-width: 310px;
-  width: 95%;
-  max-width: 370px;
-}
-.Menu .links {
-  color: white;
-  width: 100vw;
-  height: 100vh;
-  margin-top: 48.53px;
-  background-color: #2F3E46;
-  font-size: 25px;
-}
-
-.Menu .links > * {
-  padding: 0.1em 0;
-}
-.Menu .color {
-  width: 30px;
-  height: 30px;
-  margin: 5px;
-  cursor: pointer;
-}
-.Menu .ColorPicker input{
-  display: block;
-  margin-left: auto;
-}
-.Menu .links a{
-  color: white;
-  /*padding: 5px 16px;*/
-  text-decoration: none;
-  display: block;
-  margin-top: 0.2em;
-}
-
-.Menu .ListConnector {
-  width: 200px;
-  margin-left: auto;
-  margin-right: auto;
-}
-.Menu .ListConnector input[type=text]{
-  width: 80px;
-}
-.Menu input[type=submit]{
-  margin-left: 0.5em;
-  background-color: #87bba2;
-  color: #364958;
-  font-weight: bold;
-}
-.List input[type=submit]:hover {
-  opacity: 0.8;
-}
-
-.Menu input[type=text], input[type=submit]{
-  padding: 12px 20px;
-  margin: 8px 0;
-  display: inline-block;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-.Menu .links a:hover {
-  background-color: #ddd;
-  color: black;
-}
-
-.Menu .active {
-  background-color: #4CAF50;
-  color: white;
-}
-
-.burger {
-  display: inline-block;
-  cursor: pointer;
-  float: right;
-  margin-top: 5px;
-  margin-right: 0.5em;
-}
-
-.bar1, .bar2, .bar3 {
-  width: 25px;
-  height: 5px;
-  background-color: white;
-  margin: 6px 0;
-  transition: 0.5s;
-}
-
-.change .bar1 {
-  -webkit-transform: rotate(-45deg) translate(-9px, 6px);
-  transform: rotate(-45deg) translate(-9px, 6px);
-}
-
-.change .bar2 {opacity: 0;}
-
-.change .bar3 {
-  -webkit-transform: rotate(45deg) translate(-8px, -8px);
-  transform: rotate(45deg) translate(-8px, -8px);
-}
+    align-items: center;
+    text-align: left;
+    display: flex;
+    min-width: 310px;
+    width: 95%;
+    max-width: 370px;
+  }
+  .Menu .links {
+    color: white;
+    width: 100%;
+    height: 100vh;
+    background-color: #2F3E46;
+    font-size: 25px;
+  }
+  
+  .Menu .links > * {
+    padding: 0.1em 0;
+  }
+  .Menu .color {
+    width: 30px;
+    height: 30px;
+    margin: 5px;
+    cursor: pointer;
+  }
+  .Menu .ColorPicker input{
+    display: block;
+    margin-left: auto;
+  }
+  .Menu .links a{
+    color: white;
+    /*padding: 5px 16px;*/
+    text-decoration: none;
+    display: block;
+    margin-top: 0.2em;
+  }
+  
+  .Menu .ListConnector {
+    width: 200px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .Menu .ListConnector input[type=text]{
+    width: 80px;
+  }
+  .Menu input[type=submit]{
+    margin-left: 0.5em;
+    background-color: #87bba2;
+    color: #364958;
+    font-weight: bold;
+  }
+  .List input[type=submit]:hover {
+    opacity: 0.8;
+  }
+  
+  .Menu input[type=text], input[type=submit]{
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  .Menu .links a:hover {
+    background-color: #ddd;
+    color: black;
+  }
+  
+  .Menu .active {
+    background-color: #4CAF50;
+    color: white;
+  }

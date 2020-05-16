@@ -1,8 +1,21 @@
 .App {
   height: 100%;
+  width: 100%;
 }
-
+footer {
+  font-size: 10px;
+  bottom: 0px;
+  padding: 0.3em;
+  background-color: #2F3E46;
+  color: white;
+  text-align: center;
+}
+footer a {
+  text-decoration: none;
+  color: white;
+}
 .App main  {
   width: 100%;
-  margin-top: 60px;
+  margin-top: 48.53px;
+  min-height: 100%;
 }
