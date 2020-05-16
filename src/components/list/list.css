@@ -1,6 +1,11 @@
 .List .ItemAdder input[type=text]{
   width: 75%;
 }
+.List .Sorts {
+  color: black;
+  font-weight: bold;
+  font-size: 18px;
+}
 .List .desc {
   padding: 1em;
 }

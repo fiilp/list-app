@@ -24,7 +24,7 @@ var App = {
               App.content()
             ]),
             m('footer', {class: 'flex d-column'}, [
-              m('a', {href: 'https://icons8.com/icon/78933/text-height'}, 'Icons from Icons8'),
+              m('a', {href: 'https://icons8.com/'}, 'Icons from Icons8'),
               m('div',[
                 'Made by: ',
                 m('a', {href: 'http://filipg.se'}, 'Filip G')

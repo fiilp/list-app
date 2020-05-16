@@ -10,12 +10,15 @@ import io from 'socket.io-client';
 import './list.css';
 import {setCookie, getCookie} from './../../utility/cookies';
 import listModel from '../../model/listModel';
+import Sort from '../sort/sort';
 
 const socket = io();
-
+const TEXT_ICON = 'https://img.icons8.com/material/35/000000/text-height--v1.png';
+const DATE_ICON = 'https://img.icons8.com/ios/35/000000/date-to.png';
+const COLOR_ICON = 'https://img.icons8.com/metro/35/000000/fill-color.png'
 listModel['itemColor'] = getCookie('itemColor') || '#ffffff';
 listModel['textColor'] = getCookie('textColor') || '#000000';
-
+listModel['createSort']('created');
 let RecentColors = {
   view: vnode => m('div', {class: 'RecentColors flex'}, [
     vnode.attrs.source.map(c => m('div',{ 
@@ -123,11 +126,26 @@ let List = {
   inList: false,
   textEntered: '',
   items: [],
+  onupdate: console.log('updated'),
   content: () => {
     if(List.inList)
       return [
         m('h2', listModel['listTitle']),
         m(ItemAdder, {oiCb: List.onInput, ocCb: List.onAdd}),
+        m('div.Sorts.flex.super-center', [
+          m(Sort, {
+            sort: (r) =>{listModel['createSort']('created', r); List.addArray(listModel['items']);},
+            icon: DATE_ICON
+          }),
+          m(Sort, {
+            sort: (r) => {listModel['createSort']('color', r); List.addArray(listModel['items']);},
+            icon: COLOR_ICON
+          }),
+          m(Sort, {
+            sort: (r) => {listModel['createSort']('item', r); List.addArray(listModel['items']);},
+            icon: TEXT_ICON
+          }),
+        ]),
         m('div', {class: 'items flex a-i-center d-column'}, List.items)
       ]; 
     else {
@@ -142,7 +160,7 @@ let List = {
   },
   addArray: (a) => {
     usedColors(a);
-    List.items = a.map( i => m(
+    List.items = listModel['sort'](a).map( i => m(
       ListItem, 
       {
         item: i.item, 
@@ -186,11 +204,14 @@ const getListById = (toSet) => {
         params: { listId: listModel.setId }
     })
     .then(r =>{ 
+      listModel['items'] = r.items;
       listModel['listTitle'] = r.name;
-      List.addArray(r.items)
+      List.addArray(listModel['items'] )
     });
     socket.on(`${listModel.setId}`, (list) => {
-      List.addArray(JSON.parse(list).items);
+      listModel['items'] = JSON.parse(list).items;
+      listModel['sort'](listModel['items']);
+      List.addArray(listModel['items']);
     });
   }
 };
@@ -212,7 +233,6 @@ const createList = (toSet) => {
 const addItem = item => {
   setCookie('itemColor', listModel.itemColor);
   setCookie('textColor', listModel.textColor);
-  debugger;
   socket.emit('add item', JSON.stringify({
     item,
     id: listModel.setId, 
