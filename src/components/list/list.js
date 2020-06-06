@@ -8,6 +8,9 @@
 import m from 'mithril';
 import io from 'socket.io-client';
 import './list.css';
+import ListItem from './listItem';
+import ItemAdder from './itemAdder';
+import ListConntectorM from '../modelAdjusted/listConnectorM';
 import {setCookie, getCookie} from './../../utility/cookies';
 import listModel from '../../model/listModel';
 import Sort from '../sort/sort';
@@ -19,105 +22,6 @@ const COLOR_ICON = 'https://img.icons8.com/metro/35/000000/fill-color.png'
 listModel['itemColor'] = getCookie('itemColor') || '#ffffff';
 listModel['textColor'] = getCookie('textColor') || '#000000';
 listModel['createSort']('created');
-let RecentColors = {
-  view: vnode => m('div', {class: 'RecentColors flex'}, [
-    vnode.attrs.source.map(c => m('div',{ 
-      class: 'color',
-      style: `background-color: ${c}`,
-      onclick: vnode.attrs.oc
-    }))
-  ])
-}
-
-/**
- * Used to pick color of list item.
- */
-let ColorPicker = {
-  toHex: (rgb) => '#'.concat(
-    rgb.substring(4, rgb.length-1)
-    .replace(/ /g, '')
-    .split(',')
-    .map(e => parseInt(e, 10))
-    .map(e => e.toString(16))
-    .reduce((a,b) => a+b)
-  ),
-  pickText: e=> listModel['textColor'] = e.target.value,
-  recentText: e => listModel['textColor'] = ColorPicker.toHex(e.target.style.backgroundColor),
-  pickItem: e => listModel['itemColor'] = e.target.value,
-  recentItem: e => listModel['itemColor'] = ColorPicker.toHex(e.target.style.backgroundColor),
-  view: () => m('div', {class: 'ColorPicker'}, [
-    m('div', {class: 'picker'}, [
-      'Pick background color: ',
-      m('input', {type: 'color', value: listModel['itemColor'], oninput: ColorPicker.pickItem})
-    ]),
-    m(RecentColors, {source: listModel['itemColors'], oc: ColorPicker.recentItem}),
-    m('div', {class: 'picker'}, [
-      'Pick text color: ',
-      m('input', {type: 'color', value: listModel['textColor'], oninput: ColorPicker.pickText}),
-    ]),
-    m(RecentColors, {source: listModel['textColors'], oc: ColorPicker.recentText}),
-  ])
-};
-
-/**
-* Used to connect to a list based on ID.
-*/
-let ListConnector = {
-  // TODO: Have oninput and onclick as attributes for more flexiblity.
-  loading: false,
-  displayLoading: () =>  m('p', 'LOADING LIST...'),
-  content: (state) => { 
-
-    if(!ListConnector.loading)
-      return [
-        m('input', {type: 'text', oninput: ListConnector.oi, placeholder: 'Name...'}),
-        m('input', {type: 'submit', onclick: ListConnector.oc, value: 'Create'})
-      ]
-    else return ListConnector.displayLoading();
-  },
-  oi: e => listModel.listId = e.target.value,
-  oc: () => {
-    if(listModel.listId){
-      ListConnector.loading = true;
-      m.redraw();
-      createList(listModel.listId);
-    }
-  },
-  view: (vnode) => m('div', {class: 'ListConnector flex super-center'},
-    ListConnector.content(vnode.state)
-  )
-};
-
-/**
-* Component for putting the item name and then adding it to the list.
-*
-* @attribute  oiCb  Callback for when ever input is put into the text input.
-* @attribute  ocCb  Callback for when the add button is clicked.
-*/
-let ItemAdder = {
-  view: (vnode) => m('div', {class: 'ItemAdder flex super-center'}, [
-    m('input', {type: 'text', oninput: vnode.attrs.oiCb, placeholder: 'Item...'}),
-    m('input', {type: 'submit', onclick: vnode.attrs.ocCb, value: '+ Add'})
-  ])
-};
-
-/**
-* Component for items added to the list.
-*
-* @attribute  item  A string with the name of the item to be added.
-* @attribute  ocCb  Callback when clicking the remove-button of the item.
-*/
-let ListItem = {
-  view: (vnode) => m('div', 
-  {
-    class: 'ListItem flex a-i-center',
-    draggable: "true",
-    style: `background-color: ${vnode.attrs.color || listModel.itemColor};`
-  }, [
-    m('p', {style: `color: ${vnode.attrs.textColor || listModel['textColor']}`}, vnode.attrs.item),
-    m('button', {onclick: vnode.attrs.ocCb}, 'X')
-  ])
-};
 
 /**
 * Renders all the components needed for the list
@@ -149,7 +53,7 @@ let List = {
         m('div', {class: 'items flex a-i-center d-column'}, List.items)
       ]; 
     else {
-      let content = [m(ListConnector)];
+      let content = [m(ListConntectorM)];
       if(getCookie('previous'))
       content = content.concat(
           m('a', {href: `/?list=${getCookie('previous')}`}, 'Recent list'));
@@ -191,7 +95,6 @@ let List = {
   ])
 }; 
 export default List;
-export {ColorPicker, ListConnector};
 
 /*------------------------- HELPER FUNCTIONS -------------------------*/
 const getListById = (toSet) => {
@@ -216,20 +119,6 @@ const getListById = (toSet) => {
   }
 };
 
-const createList = (toSet) => {
-  m.request({
-    url: '/createList',
-    method: 'POST',
-    headers: {
-      redirect: 'follow'
-    },
-    params: { listId: toSet }
-  })
-  .then(id =>
-    window.location.href = window.location.origin.concat(`/?list=${id.id}`)
-  );
-}
-
 const addItem = item => {
   setCookie('itemColor', listModel.itemColor);
   setCookie('textColor', listModel.textColor);
@@ -249,7 +138,7 @@ const removeItem = item => {
 }
 
 const removeListSubscribtion = (r) => {
-  socket.off(r); // stops listening to the "news" event
+  socket.off(r);
 };
 
 const usedColors = a => {

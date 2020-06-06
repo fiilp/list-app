@@ -1,9 +1,7 @@
 import m from 'mithril';
-import {
-  ColorPicker, 
-  ListConnector, 
-  } from '../list/list';
 import  './menu.css';
+import ListConntectorM from '../modelAdjusted/listConnectorM';
+import ColorPickerM from '../modelAdjusted/colorPickerM';
 
 let MenuOptions = {
     showShare: () => {
@@ -17,8 +15,8 @@ let MenuOptions = {
     },
     view: () => m('div',{class: 'links flex d-column a-i-center'},[
         m('p', 'New list'),
-        m(ListConnector),
-        m(ColorPicker),
+        m(ListConntectorM),
+        m(ColorPickerM),
         MenuOptions.showShare()
     ])
 };

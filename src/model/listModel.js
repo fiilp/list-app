@@ -1,4 +1,4 @@
-let listModel = {
+const listModel = {
     listTitle: '',
     itemInput: '',
     listId: '',
@@ -8,11 +8,17 @@ let listModel = {
     textColor: '',
     textColors: [],
     items: [],
+    getItemColor: () => listModel.itemColor,
+    setItemColor: (c) => listModel.itemColor = c,
+    getItemColors: () => listModel.itemColors,
+    getTextColors: () => listModel.textColors,
+    getTextColor: () => listModel.textColor,
+    setTextColor: (c) => listModel.textColor = c,
     createSort: (v, reverse) => {
         listModel.sort = (a) => {
             return a = a.sort((x, y) => {
-            if(!reverse === x[v] > y[v]) return 1;
-            if(!reverse === x[v] < y[v]) return -1;
+            if(x[v] > y[v]) return 1 - (2 * reverse);
+            else if(x[v] < y[v]) return -1 + (2 * reverse);
             else return 0;
             }); 
         };
