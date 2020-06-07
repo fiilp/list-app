@@ -13,15 +13,18 @@ import './app.css';
 
 
 var App = {
-    toggle: false,
-    content: () => {
-      if(!App.toggle) return m(List);
+    content: (id) => {   
+      if(!document.location.hash.includes('#!/menu')) 
+        return m(List, {listId: id});
       else return m(Menu);
     },
-    view: () => m('div', {class: 'App'}, [
-            m(Header, {toggle: () => App.toggle = !App.toggle}),
+    view: (vnode) => m('div', {class: 'App'}, [
+            m(Header, {toggle: () => {
+              if(!document.location.hash.includes('#!/menu')) m.route.set('/menu');
+              else window.history.back();
+            }, burgerCond: !document.location.hash.includes('#!/menu')}),
             m('main', {class: 'flex a-i-center d-column'}, [
-              App.content()
+              App.content(vnode.attrs.listid)
             ]),
             m('footer', {class: 'flex d-column'}, [
               m('a', {href: 'https://icons8.com/'}, 'Icons from Icons8'),

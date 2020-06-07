@@ -8,4 +8,9 @@
 import m from "mithril";
 import App from './app.js';
 
-m.mount(document.body.firstElementChild, App);
+//m.mount(document.body.firstElementChild, App);
+m.route(document.body.firstElementChild,'/', {
+ '/': App,
+ '/menu': App,
+ '/list/:listid': App
+});

@@ -7,18 +7,17 @@ import ListConntector from '../list/listConnector';
 const ListConntectorM = {
     view: () => m(ListConntector, {
         oi: e => listModel.listId = e.target.value,
-        oc: () => {
+        oc: (cb) => {
           if(listModel.listId){
-            console.log(listModel);
-            
-            m.redraw();
-            createList(listModel.listId);
+            createList(listModel.listId,() => {
+              cb();
+            });
           }
         },
       })
 }; export default ListConntectorM;
 
-const createList = (toSet) => {
+const createList = (toSet, cb) => {
   console.log('create list???');
   m.request({
     url: '/createList',
@@ -29,6 +28,7 @@ const createList = (toSet) => {
     params: { listId: toSet }
   })
   .then(id =>
-    window.location.href = window.location.origin.concat(`/?list=${id.id}`)
-  );
+    //window.location.href = window.location.origin.concat(`/?list=${id.id}`)
+    m.route.set(`/list/${id.id}`)
+  ).then(cb);
 }

@@ -5,7 +5,7 @@ import './header.css';
 let Header = {
     view: (vnode) => m('div', {class:'Header'},[
         m('h1', 'List collaboration'),
-        m(MenuIcon, {toggle: vnode.attrs.toggle})
+        m(MenuIcon, {toggle: vnode.attrs.toggle, burgerCond: vnode.attrs.burgerCond})
     ])
 };
 

@@ -2,13 +2,17 @@ import m from 'mithril';
 import  './menu.css';
 import ListConntectorM from '../modelAdjusted/listConnectorM';
 import ColorPickerM from '../modelAdjusted/colorPickerM';
+import { getCookie } from '../../utility/cookies';
 
 let MenuOptions = {
     showShare: () => {
-        if(window.location.href.includes('?list='))
         return m('div', {class: 'sharable'},[
-            m('input', 
-            {type: 'text', readonly: 'readonly', id: 'share', value: window.location.href}
+            m('input',{
+                type: 'text', 
+                readonly: 'readonly', 
+                id: 'share', 
+                value: window.location.origin.concat(`/#!/list/${getCookie('previous')}`)
+            }
             ),
             m('input', {type: 'submit', id: 'share', value: 'Copy URL', onclick: copyURL}),
         ]);

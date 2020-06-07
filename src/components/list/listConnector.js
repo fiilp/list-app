@@ -12,7 +12,9 @@ let ListConnector = {
       if(!ListConnector.loading)
         return [
           m('input', {type: 'text', oninput: attrs.oi, placeholder: 'Name...'}),
-          m('input', {type: 'submit', onclick: () => {attrs.oc(); ListConnector.loading = true;}, value: 'Create'})
+          m('input', {type: 'submit', onclick: () => {
+            attrs.oc(()=>ListConnector.loading = false); 
+            ListConnector.loading = true;}, value: 'Create'})
         ]
       else return ListConnector.displayLoading();
     },

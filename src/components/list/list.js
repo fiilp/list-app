@@ -30,9 +30,8 @@ let List = {
   inList: false,
   textEntered: '',
   items: [],
-  onupdate: console.log('updated'),
   content: () => {
-    if(List.inList)
+    if(m.route.get().includes('/list'))
       return [
         m('h2', listModel['listTitle']),
         m(ItemAdder, {oiCb: List.onInput, ocCb: List.onAdd}),
@@ -56,7 +55,7 @@ let List = {
       let content = [m(ListConntectorM)];
       if(getCookie('previous'))
       content = content.concat(
-          m('a', {href: `/?list=${getCookie('previous')}`}, 'Recent list'));
+          m(m.route.Link, {href: `/list/${getCookie('previous')}`}, 'Recent list'));
       return content.concat(
         m('p', {class: 'desc'}, 'Every new list creates a unique URL. Share the URL to collaborate with others on your list.')
       ); 
@@ -73,7 +72,6 @@ let List = {
         ocCb: List.onRemove
       }
     ));   
-    m.redraw();
   },
   onRemove: (e) => {
     removeItem(e.target.previousElementSibling.innerHTML);
@@ -85,10 +83,13 @@ let List = {
       e.target.previousElementSibling.value = '';
     }
   },
-  oninit: () => {
-    const params = location.search.split('=');
-    List.inList = params[0] === '?list';
-    if(List.inList) getListById(params[1]);
+  onupdate: vnode => {
+    if(vnode.attrs.listId != listModel['setId'])
+      getListById(vnode.attrs.listId);
+  },
+  oninit: (vnode) => {
+    if(vnode.attrs.listId) 
+      getListById(vnode.attrs.listId);
   },
   view: () => m('div', {class: 'List'}, [
       [...List.content()]
