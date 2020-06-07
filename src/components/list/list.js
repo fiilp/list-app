@@ -57,7 +57,10 @@ let List = {
       content = content.concat(
           m(m.route.Link, {href: `/list/${getCookie('previous')}`}, 'Recent list'));
       return content.concat(
-        m('p', {class: 'desc'}, 'Every new list creates a unique URL. Share the URL to collaborate with others on your list.')
+       [ m('p', {class: 'desc'}, 'Every new list creates a unique link. Share the link to collaborate with others on your list.'),
+        m('h2', 'How to:'), m('p', {class: 'desc'}, 
+        "If you don't have a link to an existing list, create a new one! Once created, add the items you want. To change color press the menu button in the top right corner. The text and background can be adjusted. If the item has already been added just hold down your mouse or finger on the item."),
+      ]
       ); 
     };  
   },
