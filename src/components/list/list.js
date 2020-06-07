@@ -69,7 +69,8 @@ let List = {
         item: i.item, 
         textColor: i.textColor, 
         color: i.color,
-        ocCb: List.onRemove
+        ocCb: List.onRemove,
+        cCol: changeColor
       }
     ));
     m.redraw();   
@@ -121,7 +122,10 @@ const getListById = (toSet) => {
     });
   }
 };
-
+const changeColor = i => {
+  removeItem(i);
+  addItem(i);
+}
 const addItem = item => {
   setCookie('itemColor', listModel.itemColor);
   setCookie('textColor', listModel.textColor);

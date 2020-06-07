@@ -6,11 +6,20 @@ import m from 'mithril';
 * @attribute  ocCb  Callback when clicking the remove-button of the item.
 */
 let ListItem = {
-    view: (vnode) => m('div', 
+    tId: undefined,
+    onupdate: () => console.log('bordeR: ' + ListItem.border), 
+    view: (vnode) => m('div',
     {
       class: 'ListItem flex a-i-center',
       draggable: "true",
-      style: `background-color: ${vnode.attrs.color};`
+      style: `
+      background-color: ${vnode.attrs.color};`,
+      onmousedown: () => ListItem.tId = setTimeout(() => 
+        vnode.attrs.cCol(vnode.attrs.item), 500
+      ),onmouseup: () => clearTimeout(ListItem.tId),     
+      ontouchstart: () => ListItem.tId = setTimeout(() => 
+        vnode.attrs.cCol(vnode.attrs.item), 500
+      ),ontouchend: () => clearTimeout(ListItem.tId),
     }, [
       m('p', {style: `color: ${vnode.attrs.textColor}`}, vnode.attrs.item),
       m('button', {onclick: vnode.attrs.ocCb}, 'X')
