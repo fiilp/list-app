@@ -1,3 +1,8 @@
+/**
+ * A hamburger menu icon. Uses CSS class "change"
+ * to animate. Takes parameter toggle as a function
+ * callback when icon is clicked.
+ */
 import m from 'mithril';
 import  './menuIcon.css';
 
