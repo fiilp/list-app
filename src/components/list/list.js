@@ -101,7 +101,6 @@ export default List;
 /*------------------------- HELPER FUNCTIONS -------------------------*/
 const getListById = (toSet) => {
   if(toSet){
-    console.log(listModel.setId);
     if(listModel.setId) socket.off(`${listModel.setId}`);
     listModel.setId = toSet;
     setCookie('previous', listModel.setId);
