@@ -71,7 +71,8 @@ let List = {
         color: i.color,
         ocCb: List.onRemove
       }
-    ));   
+    ));
+    m.redraw();   
   },
   onRemove: (e) => {
     removeItem(e.target.previousElementSibling.innerHTML);
@@ -100,6 +101,8 @@ export default List;
 /*------------------------- HELPER FUNCTIONS -------------------------*/
 const getListById = (toSet) => {
   if(toSet){
+    console.log(listModel.setId);
+    if(listModel.setId) socket.off(`${listModel.setId}`);
     listModel.setId = toSet;
     setCookie('previous', listModel.setId);
     m.request({
@@ -137,10 +140,6 @@ const removeItem = item => {
     id: listModel.setId
   }));
 }
-
-const removeListSubscribtion = (r) => {
-  socket.off(r);
-};
 
 const usedColors = a => {
   const u = (v, i, a) => a.indexOf(v) === i;

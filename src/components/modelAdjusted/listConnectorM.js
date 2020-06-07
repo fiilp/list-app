@@ -28,7 +28,6 @@ const createList = (toSet, cb) => {
     params: { listId: toSet }
   })
   .then(id =>
-    //window.location.href = window.location.origin.concat(`/?list=${id.id}`)
     m.route.set(`/list/${id.id}`)
   ).then(cb);
 }
