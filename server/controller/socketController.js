@@ -35,12 +35,12 @@ const ioInit = (io, lists) => {
  */
 const addToList = async (item, io, lists) => {
   const o = JSON.parse(item);
-  if(lists[o.id]) itemExists(o, lists);
+  if(lists[o.id]){ resetListClear(o.id, lists); itemExists(o, lists); }
   else {
     lists[o.id] = {items: []};
     const doc = await getList(o.id);
     lists[o.id]['name'] = doc.name;
-    setTimeout(() => {io.emit(`${o.id}`, JSON.stringify([])); delete lists[o.id]}, DELETE_TIMEOUT);
+    lists[o.id].deletion = clearList(o.id, lists);
   };
   lists[o.id].items = [{
     item: o.item, 
@@ -48,7 +48,7 @@ const addToList = async (item, io, lists) => {
     textColor: o.textColor,
     created: Date.parse(new Date())
   }].concat(lists[o.id].items);
-  setList(o.id, lists[o.id]);
+  updateListInDB(o.id, lists[o.id]);
   io.emit(`${o.id}`, JSON.stringify(lists[o.id]));
 };
 
@@ -74,9 +74,28 @@ const itemExists = (item, lists) => {
  */
 const removeFromList = (item, io, lists) => {
   const o = JSON.parse(item);
+  resetListClear(o.id, lists);
   itemExists(o, lists);
-  setList(o.id, lists[o.id]);
+  updateListInDB(o.id, lists[o.id]);
   io.emit(`${o.id}`, JSON.stringify(lists[o.id]));
 };
 
 module.exports = ioInit;
+
+const resetListClear = (id, lists) => {
+  if(lists[id]){
+    console.log(`Deletion of ${id} cancelled`);
+    lists[id].deletion =  clearList(id, lists);
+    clearTimeout(lists[id].deletion, lists);
+  }
+};
+const clearList = (id, lists) => {
+  console.log(`Deletion of ${id} set to T - ${DELETE_TIMEOUT}`);
+  setTimeout(
+    () => {console.log(`Deleting ${id}`); delete lists[id]},
+    DELETE_TIMEOUT
+  );
+};
+
+const updateListInDB = (id, list) => 
+  setList(id, {name: list.name, items: list.items});

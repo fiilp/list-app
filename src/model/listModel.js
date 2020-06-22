@@ -9,7 +9,7 @@ const listModel = {
     textColors: [],
     items: [],
     getItemColor: () => listModel.itemColor,
-    setItemColor: (c) => listModel.itemColor = c,
+    setItemColor: (c) => {listModel.itemColor = c},
     getItemColors: () => listModel.itemColors,
     getTextColors: () => listModel.textColors,
     getTextColor: () => listModel.textColor,
