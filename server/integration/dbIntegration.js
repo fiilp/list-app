@@ -44,7 +44,8 @@ const getList = (list) => {
 * @param  items items to be set in the list.
 */
 const setList = (list, items) => {
-  db.collection('lists').doc(list).set(items);
+  if(items.name && items.items)
+    db.collection('lists').doc(list).set(items);
 };
 
 /**
