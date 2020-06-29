@@ -112,6 +112,9 @@
   font-size: 120%;
 }
 
+.List .ListItem > button:active {
+  border: none;
+}
 .List .ListItem > button:hover {
   background-color: #BF2B35;
 }

@@ -14,14 +14,18 @@ let RecentColors = {
  * Used to pick a color
  */
 let ColorPicker = {
-    toHex: (rgb) => '#'.concat(
-      rgb.substring(4, rgb.length-1)
-      .replace(/ /g, '')
-      .split(',')
-      .map(e => parseInt(e, 10))
-      .map(e => e.toString(16))
-      .reduce((a,b) => a+b)
-    ),
+    toHex: (rgb) => {
+      const h = '#'.concat(
+        rgb.substring(4, rgb.length-1)
+        .replace(/ /g, '')
+        .split(',')
+        .map(e => parseInt(e, 10))
+        .map(e => e.toString(16))
+        .map(e => e.length < 2 ? '0'.concat(e) : e)
+        .reduce((a,b) => a+b)
+      );
+      return h;
+    },
     view: (vnode) => m('div', {class: 'ColorPicker'}, [
       m('div', {class: 'picker'}, [
         'Pick background color: ',

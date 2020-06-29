@@ -126,7 +126,7 @@ const getListById = (toSet) => {
   }
 };
 const changeColor = i => {
-  removeItem(i);
+  //removeItem(i);
   addItem(i);
 }
 const addItem = item => {
