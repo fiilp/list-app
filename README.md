@@ -1,2 +1,5 @@
 # list-app
-A web application meant to keep track on a list. the plan is to be able to create list which can be collaborated on by multiple people. 
+Lets people colaborate on a list together. Invite people to your list by the unique URL genrated for a list.
+
+# Demo
+Visit: https://list-web-app.herokuapp.com
