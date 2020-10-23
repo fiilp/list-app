@@ -3,3 +3,6 @@ Lets people colaborate on a list together. Invite people to your list by the uni
 
 # Demo
 Visit: https://list-web-app.herokuapp.com
+
+# Background
+This app was mainly made because I wanted to try mithril.js and webpack configs
